@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequestTest;
-use Illuminate\Http\Request;
+use App\Http\Requests\UpdateUserRequestTest;
 
 class UserControllerTest extends Controller
 {
     public function index()
     {
-        $users = User::paginate(100);//User::all();
+        $users = User::paginate(30);//User::all();
 
         return view('adm.users.index', compact('users'));
 
@@ -25,7 +25,7 @@ class UserControllerTest extends Controller
 
     public function store(StoreUserRequestTest $request) {
 
-        User::create($request->all());
+        User::create($request->validated());
         return redirect()
             ->route('users.index')
             ->with('success','Usuário criado com sucesso!');
@@ -43,16 +43,19 @@ class UserControllerTest extends Controller
         return view('adm.users.edit', compact('user'));
     }
 
-    public function update(Request $request, string $id) {
+    public function update(UpdateUserRequestTest $request, string $id) {
         if (!$user = User::find($id)) {
             return back()
                 ->with('message', 'Usuário não encontrado');
         }
 
-        $user->update($request->only([
-            'name',
-            'email'
-        ]));
+        $data = $request->only('name', 'email');
+
+        if ($request->password) {
+            $data['password'] = bcrypt($request->password);
+        }
+
+        $user->update($data);
 
         return redirect()
             ->route('users.index')
