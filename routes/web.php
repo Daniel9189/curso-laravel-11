@@ -4,6 +4,10 @@ use App\Http\Controllers\Admin\UserControllerTest;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+Route::put('/users/{user}', [UserControllerTest::class, 'update'])->name('users.update');
+
+Route::get('/users/{user}/edit', [UserControllerTest::class, 'edit'])->name('users.edit');
+
 Route::post("/users", [UserControllerTest::class, 'store'])->name('users.store');
 
 Route::get("/users/create", [UserControllerTest::class, 'create'])->name('users.create');
